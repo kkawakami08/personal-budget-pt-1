@@ -52,9 +52,24 @@ const updateEnvelope = asyncHandler(async (req,res) => {
         new: updatedEnvelope})}
 })
 
+//@desc Delete individual envelope
+//@router DELETE /api/envelopes/:id
+//@acces Public
+const deleteEnvelope = asyncHandler(async (req,res) => {
+    const envelopeId = req.params.id
+    const identifiedEnvelope = await Envelope.findById(envelopeId)
+    if (!identifiedEnvelope) {
+        res.status(400).json({message: "Invalid ID"})
+    } else {
+    await identifiedEnvelope.remove()
+    res.status(200).json({
+        message: `Removed`})}
+})
+
 module.exports = {
     getAllEnvelopes,
     newEnvelope,
     getOneEnvelope,
-    updateEnvelope
+    updateEnvelope,
+    deleteEnvelope
 }
