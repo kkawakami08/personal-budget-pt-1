@@ -35,8 +35,26 @@ const getOneEnvelope = asyncHandler(async (req,res) => {
     res.status(200).json(identifiedEnvelope)}
 })
 
+//@desc Update individual envelope
+//@router PUT /api/envelopes/:id
+//@acces Public
+const updateEnvelope = asyncHandler(async (req,res) => {
+    const envelopeId = req.params.id
+    const identifiedEnvelope = await Envelope.findById(envelopeId)
+    if (!identifiedEnvelope) {
+        res.status(400).json({message: "Invalid ID"})
+    } else if (identifiedEnvelope.category === req.body.category || identifiedEnvelope.budget === req.body.budget) {
+        res.status(400).json({message: "Please update"})
+    } else {
+    const updatedEnvelope = await Envelope.findByIdAndUpdate(envelopeId, req.body)
+    res.status(200).json({
+        old: identifiedEnvelope,
+        new: updatedEnvelope})}
+})
+
 module.exports = {
     getAllEnvelopes,
     newEnvelope,
-    getOneEnvelope
+    getOneEnvelope,
+    updateEnvelope
 }
