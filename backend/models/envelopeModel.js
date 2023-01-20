@@ -10,4 +10,4 @@ const envelopeSchema = mongoose.Schema({
     }
 })
 
-module.exports = mongoose.model("Envelop",envelopeSchema)
+module.exports = mongoose.model("Envelope",envelopeSchema)

@@ -23,8 +23,20 @@ const newEnvelope = asyncHandler(async (req,res) => {
         res.status(200).json(envelope)}
 })
 
+//@desc Get individual envelope
+//@router GET /api/envelopes/:id
+//@acces Public
+const getOneEnvelope = asyncHandler(async (req,res) => {
+    const envelopeId = req.params.id
+    const identifiedEnvelope = await Envelope.findById(envelopeId)
+    if (!identifiedEnvelope) {
+        res.status(400).json({message: "Invalid ID"})
+    } else {
+    res.status(200).json(identifiedEnvelope)}
+})
 
 module.exports = {
     getAllEnvelopes,
-    newEnvelope
+    newEnvelope,
+    getOneEnvelope
 }
