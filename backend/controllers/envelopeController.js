@@ -52,6 +52,49 @@ const updateEnvelope = asyncHandler(async (req,res) => {
         new: updatedEnvelope})}
 })
 
+//@desc Transfer budget :from to :to envelope
+//@router PUT /api/envelopes/:from/:to
+//@acces Public
+const transferBudget = asyncHandler(async (req,res) => {
+    const fromEnvelopeId = req.params.from
+    const toEnvelopeId = req.params.to
+    
+    const identifiedFromEnvelop = await Envelope.findById(fromEnvelopeId)
+    const identifiedToEnvelop = await Envelope.findById(toEnvelopeId)
+
+    if (!identifiedFromEnvelop || !identifiedToEnvelop) {
+        res.status(400).json({message: "Invalid Envelope ID"})
+    } else {
+        const transferAmount = Number(req.body.amount)
+        if (transferAmount > identifiedFromEnvelop.budget) {
+            res.status(400).json({message: "Not enough transfer funds"})
+        } else {
+            const newFromBudget = identifiedFromEnvelop.budget - transferAmount
+            const newToBudget = identifiedToEnvelop.budget + transferAmount
+            
+            const updatedFromEnvelope = await Envelope.findByIdAndUpdate(fromEnvelopeId, {budget: newFromBudget})
+            const updatedToEnvelope = await Envelope.findByIdAndUpdate(toEnvelopeId, {budget: newToBudget})
+            res.status(200).json({
+                updatedFromEnvelope,
+                updatedToEnvelope
+           })
+        }
+
+
+        }
+
+    // const identifiedEnvelope = await Envelope.findById(envelopeId)
+    // if (!identifiedEnvelope) {
+    //     res.status(400).json({message: "Invalid ID"})
+    // } else if (identifiedEnvelope.category === req.body.category || identifiedEnvelope.budget === req.body.budget) {
+    //     res.status(400).json({message: "Please update"})
+    // } else {
+    // const updatedEnvelope = await Envelope.findByIdAndUpdate(envelopeId, req.body)
+    // res.status(200).json({
+    //     old: identifiedEnvelope,
+    //     new: updatedEnvelope})}
+})
+
 //@desc Delete individual envelope
 //@router DELETE /api/envelopes/:id
 //@acces Public
@@ -71,5 +114,6 @@ module.exports = {
     newEnvelope,
     getOneEnvelope,
     updateEnvelope,
-    deleteEnvelope
+    deleteEnvelope,
+    transferBudget
 }
